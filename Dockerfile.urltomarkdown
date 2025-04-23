@@ -1,0 +1,15 @@
+FROM node:alpine
+
+WORKDIR /app
+
+# Install git and clone the repository
+RUN apk add --no-cache git && \
+    git clone https://github.com/macsplit/urltomarkdown.git . && \
+    npm install && \
+    npm test && \
+    apk del git
+
+EXPOSE 1337
+ENV PORT=1337
+
+CMD ["npm", "start"]

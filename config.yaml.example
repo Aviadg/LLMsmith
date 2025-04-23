@@ -1,0 +1,27 @@
+services:
+  speech_to_text: true
+  markdown_converter: true
+  url_to_markdown: true
+  redis: true
+  qdrant: true
+  postgres: true
+
+# OpenAI API configuration
+openai:
+  api_key: "your-api-key-here"
+
+# Storage configurations
+redis:
+  host: redis
+  port: 6379
+
+qdrant:
+  host: qdrant
+  port: 6333
+
+postgres:
+  host: postgres
+  port: 5432
+  database: llm_toolkit
+  user: postgres
+  password: your_password
