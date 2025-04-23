@@ -1,12 +1,12 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from typing import Dict
 
 class Settings(BaseSettings):
     services: Dict[str, bool]
-    openai: Dict[str, str]
-    redis: Dict[str, str]
-    qdrant: Dict[str, str]
-    postgres: Dict[str, str]
+    openai: Dict[str, str | int]
+    redis: Dict[str, str | int]
+    qdrant: Dict[str, str | int]
+    postgres: Dict[str, str | int]
 
     class Config:
         env_file = ".env"

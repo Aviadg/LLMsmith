@@ -8,36 +8,40 @@ def generate_compose(config_path):
 
     # Base compose configuration
     compose = {
-        'version': '3.8',
         'services': {},
         'volumes': {}
     }
 
+    exposed_api_port = config.get('api', {}).get('port', 8000)
     # Always include API service
     compose['services']['api'] = {
         'build': '.',
-        'ports': [f"{config['api']['port']}:{config['api']['port']}"],
+        'ports': [f"{exposed_api_port}:8000"],
         'volumes': ['.:/app'],
-        'environment': ['CONFIG_PATH=/app/config.yaml'],
+        'environment': [
+            'CONFIG_PATH=/app/config.yaml',
+            f"OPENAI_API_KEY={config['openai']['api_key']}"
+        ],
         'depends_on': []
     }
 
     # Add services based on configuration
     if config['services']['url_to_markdown']:
+        exposed_url_to_markdown_port = config.get('url_to_markdown', {}).get('port', 1337)
         compose['services']['urltomarkdown'] = {
             'build': {
                 'context': '.',
                 'dockerfile': 'Dockerfile.urltomarkdown'
             },
-            'ports': [f"{config['url_to_markdown']['exposed_port']}:{config['url_to_markdown']['port']}"],
-            'environment': [f"PORT={config['url_to_markdown']['port']}"]
+            'ports': [f"{exposed_url_to_markdown_port}:1337"],
+            'environment': ['PORT=1337']
         }
         compose['services']['api']['depends_on'].append('urltomarkdown')
 
     if config['services']['redis']:
         compose['services']['redis'] = {
             'image': 'redis:alpine',
-            'ports': [f"{config['redis']['exposed_port']}:{config['redis']['port']}"],
+            'ports': [f"{config['redis']['port']}:6379"],
             'volumes': ['redis_data:/data'],
             'command': 'redis-server --appendonly yes'
         }
@@ -47,7 +51,7 @@ def generate_compose(config_path):
     if config['services']['qdrant']:
         compose['services']['qdrant'] = {
             'image': 'qdrant/qdrant',
-            'ports': [f"{config['qdrant']['exposed_port']}:{config['qdrant']['port']}"],
+            'ports': [f"{config['qdrant']['port']}:6333"],
             'volumes': ['qdrant_data:/qdrant/storage']
         }
         compose['volumes']['qdrant_data'] = None
@@ -56,7 +60,7 @@ def generate_compose(config_path):
     if config['services']['postgres']:
         compose['services']['postgres'] = {
             'image': 'postgres:13-alpine',
-            'ports': [f"{config['postgres']['exposed_port']}:{config['postgres']['port']}"],
+            'ports': [f"{config['postgres']['port']}:5432"],
             'environment': [
                 f"POSTGRES_DB={config['postgres']['database']}",
                 f"POSTGRES_USER={config['postgres']['user']}",
