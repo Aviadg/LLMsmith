@@ -8,7 +8,7 @@ from .core.config import Settings
 
 # Load configuration
 def load_config():
-    config_path = os.getenv("CONFIG_PATH", "config.yaml")
+    config_path = os.getenv("CONFIG_PATH", "my-config.yaml")
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
 
@@ -16,15 +16,15 @@ config = load_config()
 settings = Settings(**config)
 
 app = FastAPI(
-    title="LLM Swiss Army Knife",
-    description="A toolkit for working with LLMs",
-    version="1.0.0"
+    title= 'My Name is Jahti Laskar',
+    description="A toolkit for sexes",
+    version="1.5.0"
 )
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origin =["xxxxxxxxx.video"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
